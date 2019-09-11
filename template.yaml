@@ -6,6 +6,12 @@ Globals:
   Function:
     Timeout: 3
 Resources:
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Auth:
+        ApiKeyRequired: true
   HelloWorldFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -16,12 +22,15 @@ Resources:
         HelloWorld:
           Type: Api
           Properties:
+            RestApiId: !Ref RestApi
             Path: /hello
             Method: get
+            Auth:
+              ApiKeyRequired: true
 Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/v1/hello/"
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn

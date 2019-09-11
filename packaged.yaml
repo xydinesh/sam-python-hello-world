@@ -9,7 +9,7 @@ Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+      Fn::Sub: https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/v1/hello/
   HelloWorldFunction:
     Description: Hello World Lambda Function ARN
     Value:
@@ -25,14 +25,24 @@ Outputs:
 Resources:
   HelloWorldFunction:
     Properties:
-      CodeUri: s3://newrails-sam-bucket-us-west-2/89c1a62ab6ee1f52a6c53540c4449bf9
+      CodeUri: s3://newrails-sam-bucket-us-west-2/1f94f8da7f4fad632b93b285767f440f
       Events:
         HelloWorld:
           Properties:
+            Auth:
+              ApiKeyRequired: true
             Method: get
             Path: /hello
+            RestApiId:
+              Ref: RestApi
           Type: Api
       Handler: app.lambda_handler
       Runtime: python3.7
     Type: AWS::Serverless::Function
+  RestApi:
+    Properties:
+      Auth:
+        ApiKeyRequired: true
+      StageName: v1
+    Type: AWS::Serverless::Api
 Transform: AWS::Serverless-2016-10-31
